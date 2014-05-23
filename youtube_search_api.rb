@@ -1,5 +1,5 @@
 #!/usr/bin/ruby
-
+#require relative to other files(list, songs etc.)
 require 'rubygems'
 gem 'google-api-client', '>0.7'
 require 'google/api_client'
@@ -25,9 +25,13 @@ def get_service
   return client, youtube
 end
 
+
+
 def main
+  puts "Enter your Song Name:"
+  user_input = gets.chomp
   opts = Trollop::options do
-    opt :q, 'Search term', :type => String, :default => 'Karaoke Song'
+    opt :q, 'Search term', :type => String, :default => "karaoke #{user_input}" #need to connect to user_input for song title
     opt :max_results, 'Max results', :type => :int, :default => 5
   end
 
@@ -57,8 +61,9 @@ def main
       end
     end
 
-     returned_video = videos[0].split("(").last
-     video_id_string = returned_video.delete(")")
+     returned_video_id = videos[0].split("(").last
+     video_id_string = returned_video_id.delete(")")
+     p returned_video_title = videos[0].split("(").first.rstrip
     Launchy.open("http://www.youtube.com/watch?v=#{video_id_string}")
     #puts videos[0]
    

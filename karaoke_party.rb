@@ -1,3 +1,4 @@
+
 class Viewer
   def welcome
     puts "Welcome to Karaoke Party!"
@@ -7,7 +8,7 @@ class Viewer
     puts "add song"
     puts "next song"
     puts "skip song"
-    puts "random song"
+    # puts "random song"
     puts "show queue"
     puts "clear all"
     puts "end party"
@@ -15,19 +16,22 @@ class Viewer
   end
   def add_song
     puts "What is your name?"
-      name = gets.chomp
+    name = gets.chomp
     puts "What is your cell phone number?"
-      cell_number = gets.chomp
+    cell_number = gets.chomp
     puts "What is the song you would like to sing?"
-      song = gets.chomp
+    song = gets.chomp
+    song = "Friday" if song == ""
     puts "What is the name of the artist?"
-      artist = gets.chomp
-      return {singer:name, cell_number:cell_number, song_name:song, artist_name:artist}
+    artist = gets.chomp
+    artist = "Rebecca Black" if artist == ""
+    return {singer: name, cell_number: cell_number, song_name: song, artist_name: artist}
   end
   def show_queue(songs)
     description = ["fantastic", "amazing", "wonderful", "extremely talented", "beautiful", "sort of okay", "tone-deaf", "magnificent"]
     songs.each_with_index do |song, ind|
       puts "#{ind+1}. #{song.song_name} performed by the #{description.shuffle.first}, #{song.user.singer}."
+    end
   end
   def end_party
     puts "Thank you for using Karaoke Party!!! You are a GREAT singer!"
@@ -38,9 +42,10 @@ class Viewer
 end
 
 class Controller
+  attr_reader :view, :song_list
   def initialize
-    view = Viewer.new
-    song_list = SongList.new
+    @view = Viewer.new
+    @song_list = SongList.new
     start_party
   end
   def start_party
@@ -49,31 +54,32 @@ class Controller
   end
   def run(input)
     case input
-      when "add song"
-        song_list.add_song(view.add_song)
-      when "skip song"
-        song_list.skip_song
-      when "next song"
-        song_list.next_song
-      when "random_song"
-        song_list.random_song
-      when "clear all"
-        song_list.clear_all
-      when "show queue"
-        view.show_queue(song_list.show_queue)
-      when "end party"
-        view.end_party
-        return
-      else
-        view.invalid
-      end
-      run(view.instructions)
+    when "add song"
+      song_list.add_song(view.add_song)
+    when "skip song"
+      song_list.skip_song
+    when "next song"
+      song_list.next_song
+    # when "random_song"
+    #   song_list.random_song
+    when "clear all"
+      song_list.clear_all
+    when "show queue"
+      view.show_queue(song_list.show_queue)
+    when "end party"
+      view.end_party
+      return
+    else
+      view.invalid
+    end
+    run(view.instructions)
   end
 end
 
 class SongList
+  attr_reader :list
   def initialize
-    list = []
+    @list = []
   end
 
   def add_song(args)
@@ -89,18 +95,19 @@ class SongList
   def clear_all
     list = []
   end
-  def random_song
-  end
+  # def random_song
+  # end
   def show_queue
     list
   end
 
 end
-# *****************************************
+
 class Song
+  attr_reader :song_name, :artist_name, :user, :link
   def initialize(args)
-    @song_name = args[:song_name]
-    @artist_name = args[:artist_name] || nil
+    @song_name = args[:song_name] || "Friday"
+    @artist_name = args[:artist_name] || "Rebecca Black"
     @user = User.new(args)
     @link = nil
   end
@@ -108,13 +115,15 @@ class Song
 end
 
 class User
+  attr_reader :singer, :cell_number
   def initialize(args)
-    @singer = args[:singer]
-    @cell_number = args[:cell_number]
+    @singer = args[:singer] || nil
+    @cell_number = args[:cell_number] || nil
   end
 end
 
 Controller.new
+
 
 ###SPIKES###
 #text whoever is next in queue
@@ -124,5 +133,5 @@ Controller.new
 #microphone phone
 #rate users
 #lyrics on phone - texted to you
-#
+
 

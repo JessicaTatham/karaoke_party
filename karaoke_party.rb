@@ -1,4 +1,6 @@
 require_relative "youtube_search_api"
+require 'rubygems'  
+require 'twilio-ruby'
 
 class Viewer
   def welcome
@@ -7,7 +9,7 @@ class Viewer
   def instructions
     puts "Please choose an option:"
     puts "add song"
-    puts "next song"
+    puts "play song"
     puts "skip song"
     # puts "random song"
     puts "show queue"
@@ -18,7 +20,7 @@ class Viewer
   def add_song
     puts "What is your name?"
     name = gets.chomp
-    puts "What is your cell phone number?"
+    puts "What is your cell phone number? (Ex: +19992225555)"
     cell_number = gets.chomp
     puts "What is the song you would like to sing?"
     song = gets.chomp
@@ -36,10 +38,8 @@ class Viewer
 
   def show_song(song)
     description = ["fantastic", "amazing", "wonderful", "extremely talented", "beautiful", "sort of okay", "tone-deaf", "magnificent"]
-      puts "#{song.song_name} performed by the #{description.shuffle.first}, #{song.user.singer}."
-    end
+    puts "#{song.song_name} performed by the #{description.shuffle.first} #{song.user.singer}."
   end
-
   def end_party
     puts "Thank you for using Karaoke Party!!! You are a GREAT singer!"
   end
@@ -65,11 +65,10 @@ class Controller
       song_list.add_song(view.add_song)
     when "skip song"
       song_list.skip_song
-    when "next song"
-      view.show_song(song_list[0])
+    when "play song"
+      view.show_song(song_list.list[0])
+      textmsg(song_list.list[1].user.cell_number)
       song_list.next_song
-    # when "random_song"
-    #   song_list.random_song
     when "clear all"
       song_list.clear_all
     when "show queue"
@@ -82,6 +81,17 @@ class Controller
     end
     run(view.instructions)
   end
+
+  def textmsg(number) 
+    # user_number = number.delete(' ').delete('-') 
+    twilio_array = File.readlines('twilio_secrets.txt')
+    @client = Twilio::REST::Client.new twilio_array[0], twilio_array[1] 
+    @client.account.messages.create({
+      :from => '+14242299993', :to => number, 
+      :body => 'Get Ready to Sing, Superstar! You are up next! From: Team Karaoke Party'
+    })
+  end
+
 end
 
 class SongList
@@ -130,6 +140,7 @@ class User
     @singer = args[:singer] || nil
     @cell_number = args[:cell_number] || nil
   end
+
 end
 
 Controller.new

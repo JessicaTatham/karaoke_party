@@ -3,13 +3,15 @@ class Viewer
     puts "Welcome to Karaoke Party!"
   end
   def instructions
-    #add_song
-    #end_party
-    #random_song
-    #show queue
-    #next_song
-    #clear_all
-    #skip_song
+    puts "Please choose an option:"
+    puts "add song"
+    puts "next song"
+    puts "skip song"
+    puts "random song"
+    puts "show queue"
+    puts "clear all"
+    puts "end party"
+    gets.chomp
   end
   def add_song
     puts "What is your name?"
@@ -20,6 +22,18 @@ class Viewer
       song = gets.chomp
     puts "What is the name of the artist?"
       artist = gets.chomp
+      return {singer:name, cell_number:cell_number, song_name:song, artist_name:artist}
+  end
+  def show_queue(songs)
+    description = ["fantastic", "amazing", "wonderful", "extremely talented", "beautiful", "sort of okay", "tone-deaf", "magnificent"]
+    songs.each_with_index do |song, ind|
+      puts "#{ind+1}. #{song.song_name} performed by the #{description.shuffle.first}, #{song.user.singer}."
+  end
+  def end_party
+    puts "Thank you for using Karaoke Party!!! You are a GREAT singer!"
+  end
+  def invalid
+    puts "We don't understand your input. Please try again!"
   end
 end
 
@@ -27,46 +41,58 @@ class Controller
   def initialize
     view = Viewer.new
     song_list = SongList.new
-    view.welcome
     start_party
   end
   def start_party
-    #lists out instructions
-    #creates list, asks for new song
-    song_list
-    run
+    view.welcome
+    run(view.instructions)
   end
-  def run
+  def run(input)
     case input
-      when "add nsong"
-        view.add_song
+      when "add song"
+        song_list.add_song(view.add_song)
       when "skip song"
-
-
-  end
-  def end_party
-    #quits the application
+        song_list.skip_song
+      when "next song"
+        song_list.next_song
+      when "random_song"
+        song_list.random_song
+      when "clear all"
+        song_list.clear_all
+      when "show queue"
+        view.show_queue(song_list.show_queue)
+      when "end party"
+        view.end_party
+        return
+      else
+        view.invalid
+      end
+      run(view.instructions)
   end
 end
-# *****************************************
+
 class SongList
   def initialize
     list = []
   end
 
-  def add_song
-    puts ""
+  def add_song(args)
     list << Song.new(args)
   end
   def skip_song
+    list.shift
+    next_song
   end
   def next_song
+    list.shift
   end
   def clear_all
+    list = []
   end
   def random_song
   end
   def show_queue
+    list
   end
 
 end

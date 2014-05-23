@@ -1,3 +1,4 @@
+require_relative "youtube_search_api"
 
 class Viewer
   def welcome
@@ -21,10 +22,9 @@ class Viewer
     cell_number = gets.chomp
     puts "What is the song you would like to sing?"
     song = gets.chomp
-    song = "Friday" if song == ""
+    song = "Friday Rebecca Black" if song == ""
     puts "What is the name of the artist?"
     artist = gets.chomp
-    artist = "Rebecca Black" if artist == ""
     return {singer: name, cell_number: cell_number, song_name: song, artist_name: artist}
   end
   def show_queue(songs)
@@ -33,6 +33,13 @@ class Viewer
       puts "#{ind+1}. #{song.song_name} performed by the #{description.shuffle.first}, #{song.user.singer}."
     end
   end
+
+  def show_song(song)
+    description = ["fantastic", "amazing", "wonderful", "extremely talented", "beautiful", "sort of okay", "tone-deaf", "magnificent"]
+      puts "#{song.song_name} performed by the #{description.shuffle.first}, #{song.user.singer}."
+    end
+  end
+
   def end_party
     puts "Thank you for using Karaoke Party!!! You are a GREAT singer!"
   end
@@ -59,6 +66,7 @@ class Controller
     when "skip song"
       song_list.skip_song
     when "next song"
+      view.show_song(song_list[0])
       song_list.next_song
     # when "random_song"
     #   song_list.random_song
@@ -90,7 +98,8 @@ class SongList
     next_song
   end
   def next_song
-    list.shift
+    new_song = list.shift 
+    main(new_song)
   end
   def clear_all
     list = []
@@ -111,7 +120,8 @@ class Song
     @user = User.new(args)
     @link = nil
   end
-  #Youtube API
+  
+    #Youtube API
 end
 
 class User

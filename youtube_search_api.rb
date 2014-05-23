@@ -26,12 +26,9 @@ def get_service
 end
 
 
-
-def main
-  puts "Enter your Song Name:"
-  user_input = gets.chomp
+def main(song)
   opts = Trollop::options do
-    opt :q, 'Search term', :type => String, :default => "karaoke #{user_input}" #need to connect to user_input for song title
+    opt :q, 'Search term', :type => String, :default => "karaoke #{song.song_name} #{song.artist_name}" #need to connect to user_input for song title
     opt :max_results, 'Max results', :type => :int, :default => 5
   end
 
@@ -72,4 +69,3 @@ def main
   end
 end
 
-main
